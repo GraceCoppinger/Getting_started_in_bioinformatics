@@ -1,17 +1,19 @@
-Hello! Welcome to my beginner notes on making a BiSSE model in R. Here is a first model and the notes I took to remember what I did. 
+#Hello! Welcome to my beginner notes on making a BiSSE model in R. Here is a first model and the notes I took to remember what I did. 
 
-How I structure my notes:
-Describe the step 
+#How I structure my notes:
+#Describe the step 
+
 # Simple goal of the code
-Actual code I ran
+#Actual code I ran
 # Detailed description of the code
-Checkpoint before the next step
 
-STEPS:
-Step 1: Loading your data and assigning states:
+#Checkpoint before the next step
+
+#STEPS:
+##Step 1: Loading your data and assigning states:
 tree <- read.tree("/Users/gracecoppinger/Desktop/RB_bisse_tutorial/anolis.phy")
 data <- read.csv("/Users/gracecoppinger/Desktop/RB_bisse_tutorial/anolisDataAppended.csv", row.names = 1)
-For the data I used I needed to turn the states into 0s and 1s
+#For the data I used I needed to turn the states into 0s and 1s
 #Make ecomorphs into a state
 ecomorph <- data[, "ecomorph"]
 names(ecomorph) <- rownames(data)
@@ -23,9 +25,9 @@ names(states) <- rownames(data)
 states <- states[names(states) %in% tree$tip.label]
 # Check the result
 print(states)
-Before moving onto the next step check that you have at least three objects: tree, data, states
+#Before moving onto the next step check that you have at least three objects: tree, data, states
 
-Step 2: Define your rates and create a transition matrix
+#Step 2: Define your rates and create a transition matrix
 lambda1 <- 0.10  # Speciation rate for state 1
 lambda0 <- 0.05 # Speciation rate for state 0
 mu1 <- 0.01     # Extinction rate for state 1
@@ -37,11 +39,9 @@ trans_matrix <- matrix( c( lambda1, lambda0,  mu1, mu0), nrow = 2, byrow = TRUE)
 #Assign names to the matric
 rownames(trans_matrix) <- c("State1", "State0")
 colnames(trans_matrix) <- c("Speciation", "Extinction")
-Before moving onto the next step write your Q matrix down to help visualize:
-	Example:
+#Before moving onto the next step write your Q matrix down to help visualize:
 
-
-Step 3: Likelihood function
+#Step 3: Likelihood function
 # Define a function to calculate the likelihood of the tree given the transition rates
 calculate_likelihood <- function(tree, states, trans_matrix) {
   likelihood <- 1.0
@@ -74,16 +74,10 @@ calculate_likelihood <- function(tree, states, trans_matrix) {
   
   return(likelihood)
 }
-Before moving onto the next step write your Equation down to help visualize:
-	Example:
-Log L =i = 1N(-ri *ti)
-N= Sum of edges
-i= individual edge
-ri= state give ith edge
-Ti = edge length given ith edge
+#Before moving onto the next step write your Equation down to help visualize:
 
-Step 4: Prepare data for optimization and visualization. 
-4.1 determine negative log-likelihood
+#Step 4: Prepare data for optimization and visualization. 
+#4.1 determine negative log-likelihood
 #Create a vector to store the four parameters in a single object. Allows you to pass all four parameters together as a single object
 initial_params <- c(lambda1, lambda0, mu1, mu0)
 
@@ -95,7 +89,7 @@ neg_log_likelihood <- function(params) {
   mu0 <- params[4]
 # Parameter Preparation: This part of the function is setting up the specific parameters that will be used later in the likelihood calculation. The function is likely intended to calculate the negative log-likelihood of a model given these parameters. After extracting these parameters, the function would typically proceed to calculate the negative log-likelihood based on the model, the tree structure, and the observed data (e.g., states). A lower value of NLL indicates a better fit of the model to the data.
 
-  4.2 Update the transition matrix and get new estimated paramters
+#4.2 Update the transition matrix and get new estimated paramters
 
   # Update transition matrix
   trans_matrix <- matrix(c(lambda1, lambda0, mu1, mu0), nrow = 2)
@@ -107,7 +101,7 @@ neg_log_likelihood <- function(params) {
 result <- optim(initial_params, neg_log_likelihood)
 #The primary goal of this line of code is to fit the BiSSE model to your data by finding the best estimates for the speciation and extinction rates (represented by the parameters in initial_params).
 
-Step 5: Results and plotting
+#Step 5: Results and plotting
 #Results
 estimated_params <- result$par
 print(estimated_params)
